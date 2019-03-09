@@ -9,13 +9,26 @@
     "node": ">=10.15.1"
   },
   "bin": "./dist/cli.js",
+  "scripts": {
+    "test": "jest --maxWorkers=4 --config .jestrc.json",
+    "test:watch": "jest --verbose --watchAll --config .jestrc.json"
+  },
   "dependencies": {
-    "@babel/parser": "^7.3.4"
+    "@babel/generator": "^7.3.4",
+    "@babel/parser": "^7.3.4",
+    "@babel/traverse": "^7.3.4",
+    "@babel/types": "^7.3.4",
+    "prettier": "^1.16.4"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/plugin-proposal-class-properties": "^7.3.4",
+    "@babel/plugin-proposal-decorators": "^7.3.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
+    "@babel/plugin-transform-async-to-generator": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.11",
     "babel-core": "^6.26.3",
     "babel-jest": "^24.3.1",
     "jest": "^24.3.1",

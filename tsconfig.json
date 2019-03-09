@@ -19,13 +19,14 @@
     "noUnusedLocals": true,
     "resolveJsonModule": true,
     "downlevelIteration": true,
+    "noEmit": true,
     "baseUrl": "lib",
     "paths": {
       "lib/*": ["*"]
     }
   },
   "exclude": [
-    "node_modules"
+    "node_modules/**/*"
   ],
   "include": [
     "./lib/**/*",

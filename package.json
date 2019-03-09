@@ -1,0 +1,27 @@
+{
+  "name": "ember-property-upgrade",
+  "version": "0.0.1",
+  "description": "Tool for migration from deprecated \"property()\" to new syntax",
+  "main": "index.js",
+  "author": "Miroslaw Ciastek <miroslaw.ciastek@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=10.15.1"
+  },
+  "bin": "./dist/cli.js",
+  "dependencies": {
+    "@babel/parser": "^7.3.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.3.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^24.3.1",
+    "jest": "^24.3.1",
+    "tslint": "^5.13.1",
+    "tslint-config-standard": "^8.0.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^3.3.3333"
+  }
+}

@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ember-property-upgrade for basic examples transforms input 1`] = `
+"const Person = EmberObject.extend({
+  fullName: Ember.computed('firstName', 'lastName', function () {
+    return \`\${this.firstName} \${this.lastName}\`;
+  })
+});"
+`;
+
+exports[`ember-property-upgrade for complex examples transforms input 1`] = `
+"import EmberObject, { computed } from '@ember/object';
+Person = EmberObject.extend({
+  // these will be supplied by \`create\`
+  firstName: null,
+  lastName: null,
+  powers: [],
+  fullName: Ember.computed('firstName', 'lastName', function () {
+    return \`\${this.firstName} \${this.lastName}\`;
+  }),
+  mainPower: Ember.computed('powers', function () {
+    return this.powers[0];
+  })
+});
+let ironMan = Person.create({
+  firstName: 'Tony',
+  lastName: 'Stark',
+  powers: ['super-smart']
+});
+ironMan.fullName; // \\"Tony Stark\\""
+`;

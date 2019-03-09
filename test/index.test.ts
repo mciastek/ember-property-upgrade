@@ -1,17 +1,33 @@
 import { getFixtureFile } from './helpers';
 
-import { transform } from 'lib';
-
-const INPUT_CODE = getFixtureFile('basic-input.js');
-const OUTPUT_CODE = getFixtureFile('basic-output.js');
+import { transform } from 'lib/index';
 
 describe('ember-property-upgrade', () => {
-  describe('when has proper input', () => {
-    it('transforms input', () => {
-      const output = transform(INPUT_CODE);
+  let input: string;
 
-      expect(output).toBeDefined();
-      expect(output).toBe(OUTPUT_CODE);
+  describe('for basic examples', () => {
+    beforeAll(() => {
+      input = getFixtureFile('basic-example.js');
+    });
+
+    it('transforms input', () => {
+      const result = transform(input);
+
+      expect(result).toBeDefined();
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('for complex examples', () => {
+    beforeAll(() => {
+      input = getFixtureFile('complex-example.js');
+    });
+
+    it('transforms input', () => {
+      const result = transform(input);
+
+      expect(result).toBeDefined();
+      expect(result).toMatchSnapshot();
     });
   });
 });

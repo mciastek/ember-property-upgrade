@@ -7,17 +7,14 @@ import chalk from 'chalk';
 import program from 'commander';
 import glob from 'glob';
 
+import packageInfo from '../package.json';
 import { transform } from './index';
-
-const clear = require('clear');
 
 // tslint:disable-next-line no-empty
 const noop = () => {};
 
-clear();
-
 program
-  .version('', '-v, --version')
+  .version(packageInfo.version, '-v, --version')
   .description('CLI for migration to new computed properties in Ember')
   .option('--no-format', 'Disable auto formatting')
   .option('--prettier-config [value]', 'Path to Prettier config file')

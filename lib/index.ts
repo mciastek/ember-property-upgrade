@@ -22,12 +22,24 @@ const TRANSFORM_OPTIONS: TransformOptions = {
   computedFunName: 'computed',
 };
 
-const isComputedExpression = (node: Node, identifierName: string) => {
-  return (
+const isComputedExpression = (
+  node: Node,
+  transformOptions: TransformOptions,
+) => {
+  const computedCallExpression = (
     node.type === 'CallExpression' &&
     node.callee.type === 'Identifier' &&
-    node.callee.name === 'computed'
+    node.callee.name === transformOptions.computedFunName
   );
+
+  const computedMemberExpression = (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'MemberExpression' &&
+    node.callee.object.name === transformOptions.packageName &&
+    node.callee.property.name === transformOptions.computedFunName
+  );
+
+  return computedCallExpression || computedMemberExpression;
 };
 
 export const transform = (input: string, settings = {}) => {
@@ -48,7 +60,7 @@ export const transform = (input: string, settings = {}) => {
 
         const expressionBody = callExpression.callee.object;
 
-        if (isComputedExpression(expressionBody, options.computedFunName)) {
+        if (isComputedExpression(expressionBody, options)) {
           expressionBody.arguments.unshift(...propertyArgs);
 
           path.parentPath.parentPath.replaceWith(

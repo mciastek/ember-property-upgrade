@@ -4,6 +4,12 @@ exports[`ember-property-upgrade for basic examples transforms input 1`] = `
 "const Person = EmberObject.extend({
   fullName: computed('firstName', 'lastName', function () {
     return \`\${this.firstName} \${this.lastName}\`;
+  }),
+  isYoung: Ember.computed('age', function () {
+    return this.age < 50;
+  }),
+  hasFriends: Ember.computed('friends', function () {
+    return this.friends.length > 0;
   })
 });"
 `;

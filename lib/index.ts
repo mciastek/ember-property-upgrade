@@ -11,6 +11,7 @@ import * as t from '@babel/types';
 export interface TransformOptions {
   packageName: string;
   computedFunName: string;
+  iteratorMethodNames: string[];
 }
 
 const DEFAULT_PARSER_OPTIONS: ParserOptions = {
@@ -20,6 +21,27 @@ const DEFAULT_PARSER_OPTIONS: ParserOptions = {
 const TRANSFORM_OPTIONS: TransformOptions = {
   packageName: 'Ember',
   computedFunName: 'computed',
+  iteratorMethodNames: ['map', 'filter', 'sort'],
+};
+
+const isIteratorCallExpression = (
+  node: Node,
+  transformOptions: TransformOptions,
+) => {
+  const computedCallExpression = (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' &&
+    transformOptions.iteratorMethodNames.includes(node.callee.name)
+  );
+
+  const computedMemberExpression = (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'MemberExpression' &&
+    node.callee.object.name === transformOptions.packageName &&
+    transformOptions.iteratorMethodNames.includes(node.callee.property.name)
+  );
+
+  return computedCallExpression || computedMemberExpression;
 };
 
 const isComputedExpression = (
@@ -59,15 +81,30 @@ export const transform = (input: string, settings = {}) => {
         propertyArgs = callExpression.arguments;
 
         const expressionBody = callExpression.callee.object;
+        const pathToReplace = path.parentPath.parentPath;
 
-        if (isComputedExpression(expressionBody, options)) {
+        if (isIteratorCallExpression(expressionBody, options)) {
+          const computedArray = t.arrayExpression(
+            propertyArgs as t.Identifier[],
+          );
+
+          expressionBody.arguments.splice(
+            expressionBody.arguments.length - 1,
+            0,
+            computedArray,
+          );
+
+          pathToReplace.replaceWith(
+            expressionBody,
+          );
+        } else if (isComputedExpression(expressionBody, options)) {
           expressionBody.arguments.unshift(...propertyArgs);
 
-          path.parentPath.parentPath.replaceWith(
+          pathToReplace.replaceWith(
             expressionBody,
           );
         } else {
-          path.parentPath.parentPath.replaceWith(t.callExpression(
+          pathToReplace.replaceWith(t.callExpression(
             t.memberExpression(
               t.identifier(options.packageName),
               t.identifier(options.computedFunName),

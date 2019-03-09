@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ember-property-upgrade for array examples transforms input 1`] = `
+"const Person = EmberObject.extend({
+  friendNames: map('friends', ['nameKey'], function (friend) {
+    return friend[this.get('nameKey')];
+  }),
+  friendsSorted: Ember.sort('friends', ['nameKey'], function (a, b) {
+    return a[this.get('nameKey')] - b[this.get('nameKey')];
+  }),
+  friendsFiltered: filter('friends', ['age'], function (friend) {
+    return this.get('age') < 50;
+  })
+});"
+`;
+
 exports[`ember-property-upgrade for basic examples transforms input 1`] = `
 "const Person = EmberObject.extend({
   fullName: computed('firstName', 'lastName', function () {

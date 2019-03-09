@@ -30,4 +30,17 @@ describe('ember-property-upgrade', () => {
       expect(result).toMatchSnapshot();
     });
   });
+
+  describe('for array examples', () => {
+    beforeAll(() => {
+      input = getFixtureFile('array-example.js');
+    });
+
+    it('transforms input', () => {
+      const result = transform(input);
+
+      expect(result).toBeDefined();
+      expect(result).toMatchSnapshot();
+    });
+  });
 });

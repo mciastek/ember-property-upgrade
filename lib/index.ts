@@ -8,13 +8,14 @@ import {
 import traverse, { Node, NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
-import prettier, { Options } from 'prettier';
+import prettier, { Options as PrettierOptions } from 'prettier';
 
 export interface TransformOptions {
   packageName: string;
   computedFunName: string;
   iteratorMethodNames: string[];
-  prettierOptions?: Options;
+  autoFormat: boolean;
+  autoFormatOptions?: PrettierOptions;
 }
 
 const DEFAULT_PARSER_OPTIONS: ParserOptions = {
@@ -25,7 +26,8 @@ const TRANSFORM_OPTIONS: TransformOptions = {
   packageName: 'Ember',
   computedFunName: 'computed',
   iteratorMethodNames: ['map', 'filter', 'sort'],
-  prettierOptions: {
+  autoFormat: true,
+  autoFormatOptions: {
     parser: 'babel',
   },
 };
@@ -43,6 +45,7 @@ const isIteratorCallExpression = (
   const computedMemberExpression = (
     node.type === 'CallExpression' &&
     node.callee.type === 'MemberExpression' &&
+    // @ts-ignore
     node.callee.object.name === transformOptions.packageName &&
     transformOptions.iteratorMethodNames.includes(node.callee.property.name)
   );
@@ -63,6 +66,7 @@ const isComputedExpression = (
   const computedMemberExpression = (
     node.type === 'CallExpression' &&
     node.callee.type === 'MemberExpression' &&
+    // @ts-ignore
     node.callee.object.name === transformOptions.packageName &&
     node.callee.property.name === transformOptions.computedFunName
   );
@@ -86,6 +90,7 @@ export const transform = (input: string, settings = {}) => {
         callExpression = path.parentPath.parent as t.CallExpression;
         propertyArgs = callExpression.arguments;
 
+        // @ts-ignore
         const expressionBody = callExpression.callee.object;
         const pathToReplace = path.parentPath.parentPath;
 
@@ -126,7 +131,12 @@ export const transform = (input: string, settings = {}) => {
   });
 
   const { code } = generate(ast);
-  const formattedCode = prettier.format(code, options.prettierOptions);
 
-  return formattedCode;
+  if (options.autoFormat) {
+    const formattedCode = prettier.format(code, options.autoFormatOptions);
+
+    return formattedCode;
+  }
+
+  return code;
 };

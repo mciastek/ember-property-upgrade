@@ -8,10 +8,13 @@ import {
 import traverse, { Node, NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
+import prettier, { Options } from 'prettier';
+
 export interface TransformOptions {
   packageName: string;
   computedFunName: string;
   iteratorMethodNames: string[];
+  prettierOptions?: Options;
 }
 
 const DEFAULT_PARSER_OPTIONS: ParserOptions = {
@@ -22,6 +25,9 @@ const TRANSFORM_OPTIONS: TransformOptions = {
   packageName: 'Ember',
   computedFunName: 'computed',
   iteratorMethodNames: ['map', 'filter', 'sort'],
+  prettierOptions: {
+    parser: 'babel',
+  },
 };
 
 const isIteratorCallExpression = (
@@ -120,6 +126,7 @@ export const transform = (input: string, settings = {}) => {
   });
 
   const { code } = generate(ast);
+  const formattedCode = prettier.format(code, options.prettierOptions);
 
-  return code;
+  return formattedCode;
 };

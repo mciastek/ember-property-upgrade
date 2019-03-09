@@ -1,1 +1,1 @@
-# Ember Property Migration Tool
+# Ember Property Migration Tool [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/mciastek/ember-property-upgrade/blob/master/LICENSE) [![Build Status](https://travis-ci.com/mciastek/ember-property-upgrade.svg?token=Loxo9SSxP3V1RsAiEPrG&branch=master)](https://travis-ci.com/mciastek/ember-property-upgrade)

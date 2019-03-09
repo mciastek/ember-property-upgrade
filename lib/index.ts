@@ -5,15 +5,37 @@ import {
   ParserOptions,
 } from '@babel/parser';
 
-import traverse, { NodePath } from '@babel/traverse';
+import traverse, { Node, NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
-const DEFAULT_OPTIONS: ParserOptions = {
+export interface TransformOptions {
+  packageName: string;
+  computedFunName: string;
+}
+
+const DEFAULT_PARSER_OPTIONS: ParserOptions = {
   sourceType: 'module',
 };
 
-export const transform = (input: string) => {
-  const ast = parse(input, DEFAULT_OPTIONS);
+const TRANSFORM_OPTIONS: TransformOptions = {
+  packageName: 'Ember',
+  computedFunName: 'computed',
+};
+
+const isComputedExpression = (node: Node, identifierName: string) => {
+  return (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' &&
+    node.callee.name === 'computed'
+  );
+};
+
+export const transform = (input: string, settings = {}) => {
+  const ast = parse(input, DEFAULT_PARSER_OPTIONS);
+  const options = {
+    ...TRANSFORM_OPTIONS,
+    settings,
+  };
 
   let callExpression: t.CallExpression;
   let propertyArgs;
@@ -24,13 +46,26 @@ export const transform = (input: string) => {
         callExpression = path.parentPath.parent as t.CallExpression;
         propertyArgs = callExpression.arguments;
 
-        path.parentPath.parentPath.replaceWith(t.callExpression(
-          t.memberExpression(t.identifier('Ember'), t.identifier('computed')),
-          [
-            ...propertyArgs,
-            callExpression.callee.object,
-          ],
-        ));
+        const expressionBody = callExpression.callee.object;
+
+        if (isComputedExpression(expressionBody, options.computedFunName)) {
+          expressionBody.arguments.unshift(...propertyArgs);
+
+          path.parentPath.parentPath.replaceWith(
+            expressionBody,
+          );
+        } else {
+          path.parentPath.parentPath.replaceWith(t.callExpression(
+            t.memberExpression(
+              t.identifier(options.packageName),
+              t.identifier(options.computedFunName),
+            ),
+            [
+              ...propertyArgs,
+              expressionBody,
+            ],
+          ));
+        }
       }
     },
   });

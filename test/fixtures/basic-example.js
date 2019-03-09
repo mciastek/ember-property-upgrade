@@ -1,5 +1,5 @@
 const Person = EmberObject.extend({
-  fullName: function() {
+  fullName: computed(function() {
     return `${this.firstName} ${this.lastName}`;
-  }.property('firstName', 'lastName')
+  }).property('firstName', 'lastName'),
 });

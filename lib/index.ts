@@ -18,6 +18,8 @@ export interface TransformOptions {
   autoFormatOptions?: PrettierOptions;
 }
 
+export type Options = Partial<TransformOptions>;
+
 const DEFAULT_PARSER_OPTIONS: ParserOptions = {
   sourceType: 'module',
 };
@@ -74,7 +76,7 @@ const isComputedExpression = (
   return computedCallExpression || computedMemberExpression;
 };
 
-export const transform = (input: string, settings = {}) => {
+export const transform = (input: string, settings: Options = {}) => {
   const ast = parse(input, DEFAULT_PARSER_OPTIONS);
   const options = {
     ...TRANSFORM_OPTIONS,

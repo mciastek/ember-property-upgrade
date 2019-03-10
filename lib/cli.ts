@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from 'fs';
+import path from 'path';
 import readline from 'readline';
 import util from 'util';
 
@@ -9,16 +10,20 @@ import program from 'commander';
 import glob from 'glob';
 
 import packageInfo from '../package.json';
-import { transform } from './index';
+import { Options, transform } from './index';
 
 // tslint:disable-next-line no-empty
 const noop = () => {};
 
 program
   .version(packageInfo.version, '-v, --version')
-  .description('CLI for migration to new computed properties in Ember')
+  .description(`
+    CLI for migration to new computed properties in Ember
+    Usage: ember-property-upgrade [filesGlob] [options]
+  `)
   .option('--no-format', 'Disable auto formatting')
-  .option('--prettier-config [value]', 'Path to Prettier config file')
+  .option('--prettier-config-file [value]', 'Path to Prettier config file')
+  .option('--prettier-config [value]', 'Prettier config as JSON string')
   .option(
     '--framework-pkg [value]',
     'Name of Ember\'s import alias',
@@ -39,8 +44,48 @@ if (!process.argv.slice(2).length) {
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
-
 const [filesGlob] = program.args;
+
+const getPrettierConfigFromFile = (filePath: string) => {
+  const resolvedPath = path.resolve(__dirname, filePath);
+
+  if (fs.existsSync(resolvedPath)) {
+    const result = require(resolvedPath);
+
+    return result;
+  }
+
+  console.warn(chalk.yellow(`Config file "${filePath}" doesn't exist!`));
+
+  return {};
+};
+
+const getPrettierConfig = (optionsString?: string, filePath?: string) => {
+  if (optionsString) {
+    try {
+      return JSON.stringify(optionsString);
+    } catch (error) {
+      console.warn(chalk.yellow(`Parsing options string failed`));
+      console.error(error);
+    }
+  }
+
+  if (filePath) {
+    return getPrettierConfigFromFile(filePath);
+  }
+
+  return {};
+};
+
+const transformOptions: Options = {
+  packageName: program.frameworkPkg,
+  computedFunName: program.computedFnName,
+  autoFormat: !program.noFormat,
+  autoFormatOptions: getPrettierConfig(
+    program.prettierConfig,
+    program.prettierConfigFile,
+  ),
+};
 
 const drawProgress = (current: number, total: number) => {
   readline.clearLine(process.stdout, 0);
@@ -51,7 +96,7 @@ const drawProgress = (current: number, total: number) => {
 const getParsedFile = async (filePath: string) => {
   try {
     const code = await readFile(filePath, { encoding: 'utf8' });
-    const result = transform(code);
+    const result = transform(code, transformOptions);
 
     await writeFile(filePath, result, { encoding: 'utf8' });
   } catch (error) {

@@ -20,6 +20,13 @@ export interface TransformOptions {
 
 export type Options = Partial<TransformOptions>;
 
+interface UpdateParams<N> {
+  pathToReplace: NodePath<N>;
+  expressionBody: any; // tslint:disable-line no-any
+  propertyArgs: t.Identifier[];
+  options: TransformOptions;
+}
+
 const DEFAULT_PARSER_OPTIONS: ParserOptions = {
   sourceType: 'module',
 };
@@ -76,9 +83,86 @@ const isComputedExpression = (
   return computedCallExpression || computedMemberExpression;
 };
 
+const updateIteratorCall = ({
+  pathToReplace,
+  expressionBody,
+  propertyArgs,
+}: UpdateParams<t.Node>) => {
+  const computedArray = t.arrayExpression(
+    propertyArgs as t.Identifier[],
+  );
+
+  expressionBody.arguments.splice(
+    expressionBody.arguments.length - 1,
+    0,
+    computedArray,
+  );
+
+  pathToReplace.replaceWith(
+    expressionBody,
+  );
+};
+
+const updateComputedCall = ({
+  pathToReplace,
+  expressionBody,
+  propertyArgs,
+}: UpdateParams<t.Node>) => {
+  expressionBody.arguments.unshift(...propertyArgs);
+
+  pathToReplace.replaceWith(
+    expressionBody,
+  );
+};
+
+const updateCall = ({
+  pathToReplace,
+  expressionBody,
+  propertyArgs,
+  options,
+}: UpdateParams<t.Node>) => {
+  pathToReplace.replaceWith(t.callExpression(
+    t.memberExpression(
+      t.identifier(options.packageName),
+      t.identifier(options.computedFunName),
+    ),
+    [
+      ...propertyArgs,
+      expressionBody,
+    ],
+  ));
+};
+
+const updateForProperties = (
+  path: NodePath<t.Identifier>,
+  options: TransformOptions,
+) => {
+  const callExpression = path.parentPath.parent as t.CallExpression;
+  const propertyArgs = callExpression.arguments;
+
+  // @ts-ignore
+  const expressionBody = callExpression.callee.object;
+  const pathToReplace = path.parentPath.parentPath;
+
+  const updateParams: UpdateParams<t.Node> = {
+    pathToReplace,
+    expressionBody,
+    propertyArgs: propertyArgs as t.Identifier[],
+    options,
+  };
+
+  if (isIteratorCallExpression(expressionBody, options)) {
+    updateIteratorCall(updateParams);
+  } else if (isComputedExpression(expressionBody, options)) {
+    updateComputedCall(updateParams);
+  } else {
+    updateCall(updateParams);
+  }
+};
+
 export const transform = (input: string, settings: Options = {}) => {
   const ast = parse(input, DEFAULT_PARSER_OPTIONS);
-  const options = {
+  const options: TransformOptions = {
     ...TRANSFORM_OPTIONS,
     ...settings,
     autoFormatOptions: {
@@ -87,51 +171,10 @@ export const transform = (input: string, settings: Options = {}) => {
     },
   };
 
-  let callExpression: t.CallExpression;
-  let propertyArgs;
-
   traverse(ast, {
     Identifier(path: NodePath<t.Identifier>) {
       if (path.node.name === 'property') {
-        callExpression = path.parentPath.parent as t.CallExpression;
-        propertyArgs = callExpression.arguments;
-
-        // @ts-ignore
-        const expressionBody = callExpression.callee.object;
-        const pathToReplace = path.parentPath.parentPath;
-
-        if (isIteratorCallExpression(expressionBody, options)) {
-          const computedArray = t.arrayExpression(
-            propertyArgs as t.Identifier[],
-          );
-
-          expressionBody.arguments.splice(
-            expressionBody.arguments.length - 1,
-            0,
-            computedArray,
-          );
-
-          pathToReplace.replaceWith(
-            expressionBody,
-          );
-        } else if (isComputedExpression(expressionBody, options)) {
-          expressionBody.arguments.unshift(...propertyArgs);
-
-          pathToReplace.replaceWith(
-            expressionBody,
-          );
-        } else {
-          pathToReplace.replaceWith(t.callExpression(
-            t.memberExpression(
-              t.identifier(options.packageName),
-              t.identifier(options.computedFunName),
-            ),
-            [
-              ...propertyArgs,
-              expressionBody,
-            ],
-          ));
-        }
+        updateForProperties(path, options);
       }
     },
   });

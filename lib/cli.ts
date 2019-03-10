@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from 'fs';
+import readline from 'readline';
 import util from 'util';
 
 import chalk from 'chalk';
@@ -41,6 +42,12 @@ const writeFile = util.promisify(fs.writeFile);
 
 const [filesGlob] = program.args;
 
+const drawProgress = (current: number, total: number) => {
+  readline.clearLine(process.stdout, 0);
+  readline.cursorTo(process.stdout, 0);
+  process.stdout.write(`Processing... ${current}/${total}`);
+};
+
 const getParsedFile = async (filePath: string) => {
   try {
     const code = await readFile(filePath, { encoding: 'utf8' });
@@ -53,7 +60,17 @@ const getParsedFile = async (filePath: string) => {
 };
 
 const parseFiles = (matches: string[]) => {
-  return matches.map(getParsedFile);
+  let current = 1;
+
+  return matches.map((filePath) => {
+    getParsedFile(filePath)
+      .then(() => {
+        drawProgress(current, matches.length);
+        current += 1;
+
+        return filePath;
+      });
+  });
 };
 
 glob(filesGlob, (err, matches) => {

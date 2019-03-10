@@ -21,7 +21,7 @@ program
     CLI for migration to new computed properties in Ember
     Usage: ember-property-upgrade [filesGlob] [options]
   `)
-  .option('--no-format', 'Disable auto formatting')
+  .option('--no-format', 'Disable auto formatting after code parsing')
   .option('--prettier-config-file [value]', 'Path to Prettier config file')
   .option('--prettier-config [value]', 'Prettier config as JSON string')
   .option(

@@ -55,12 +55,22 @@ const [filesGlob] = program.args;
 const spinner = ora(PROCESSING_MESSAGE);
 
 const getPrettierConfigFromFile = (filePath: string) => {
-  const resolvedPath = path.resolve(__dirname, filePath);
+  const resolvedPath = path.resolve(process.cwd(), filePath);
 
   if (fs.existsSync(resolvedPath)) {
-    const result = require(resolvedPath);
+    const result = fs.readFileSync(resolvedPath, 'utf8');
 
-    return result;
+    try {
+      return JSON.parse(result);
+    } catch (e) {
+      try {
+        return require(resolvedPath);
+      } catch (error) {
+        spinner.fail(`${FAILED_MESSAGE} Check you prettier file.`);
+
+        return console.error(error);
+      }
+    }
   }
 
   console.warn(chalk.yellow(`Config file "${filePath}" doesn't exist!`));
@@ -71,7 +81,7 @@ const getPrettierConfigFromFile = (filePath: string) => {
 const getPrettierConfig = (optionsString?: string, filePath?: string) => {
   if (optionsString) {
     try {
-      return JSON.stringify(optionsString);
+      return JSON.parse(optionsString);
     } catch (error) {
       console.warn(chalk.yellow(`Parsing options string failed`));
       console.error(error);
@@ -82,13 +92,13 @@ const getPrettierConfig = (optionsString?: string, filePath?: string) => {
     return getPrettierConfigFromFile(filePath);
   }
 
-  return {};
+  return undefined;
 };
 
 const transformOptions: Options = {
   packageName: program.frameworkPkg,
   computedFunName: program.computedFnName,
-  autoFormat: !program.noFormat,
+  autoFormat: program.format,
   autoFormatOptions: getPrettierConfig(
     program.prettierConfig,
     program.prettierConfigFile,

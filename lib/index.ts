@@ -80,7 +80,7 @@ export const transform = (input: string, settings: Options = {}) => {
   const ast = parse(input, DEFAULT_PARSER_OPTIONS);
   const options = {
     ...TRANSFORM_OPTIONS,
-    settings,
+    ...settings,
   };
 
   let callExpression: t.CallExpression;

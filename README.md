@@ -19,7 +19,7 @@ Alternatively you can install module globally and access it via alias `ember-pro
 | Option | Type | Description | Default  |
 |---------------------------|-------------|---------------|---------|
 | `--no-format` | Boolean | Disable auto formatting after code parsing | `false` |
-| `--prettier-config-file` | String | Path to Prettier config file |  |
+| `--prettier-config-file` | String | Path to Prettier config file (accepts JS and JSON files) |  |
 | `--prettier-config` | String | Prettier config as JSON string |  |
 | `--framework-pkg` | String | Name of Ember's import alias | `'Ember'` |
 | `--computed-fn-name` | String | Name of computed property function name | `'computed'` |

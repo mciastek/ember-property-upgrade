@@ -75,7 +75,7 @@ const getPrettierConfigFromFile = (filePath: string) => {
 
   console.warn(chalk.yellow(`Config file "${filePath}" doesn't exist!`));
 
-  return {};
+  return undefined;
 };
 
 const getPrettierConfig = (optionsString?: string, filePath?: string) => {

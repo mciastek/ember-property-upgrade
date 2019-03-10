@@ -81,6 +81,10 @@ export const transform = (input: string, settings: Options = {}) => {
   const options = {
     ...TRANSFORM_OPTIONS,
     ...settings,
+    autoFormatOptions: {
+      ...TRANSFORM_OPTIONS.autoFormatOptions,
+      ...settings.autoFormatOptions,
+    },
   };
 
   let callExpression: t.CallExpression;

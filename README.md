@@ -6,7 +6,7 @@ Simple tool for migrating computed properties (used with `.property()`) from syn
 After installation a CLI is available in your project.
 
 ```bash
-./node_modules/ember-property-upgrade [filesGlob] [options] --help
+./node_modules/.bin/ember-property-upgrade [filesGlob] [options] --help
 ```
 
 - `[filesGlob]` - glob expression, which points to files, e.g. `'src/**/*.js'`

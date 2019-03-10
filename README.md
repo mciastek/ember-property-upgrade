@@ -9,7 +9,7 @@ After installation a CLI is available in your project.
 ./node_modules/ember-property-upgrade [filesGlob] [options] --help
 ```
 
-- `[filesGlob]` - glob expression, which points to files, e.g. `src/**/*.js`
+- `[filesGlob]` - glob expression, which points to files, e.g. `'src/**/*.js'`
 - `[options]` - defined in [Options](#options) section
 
 Alternatively you can install module globally and access it via alias `ember-property-upgrade`.

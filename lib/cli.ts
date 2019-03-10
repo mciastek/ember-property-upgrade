@@ -1,19 +1,25 @@
 #!/usr/bin/env node
 
+import '@babel/polyfill';
+
 import fs from 'fs';
 import path from 'path';
-import readline from 'readline';
 import util from 'util';
 
 import chalk from 'chalk';
 import program from 'commander';
 import glob from 'glob';
+import ora from 'ora';
 
 import packageInfo from '../package.json';
 import { Options, transform } from './index';
 
 // tslint:disable-next-line no-empty
 const noop = () => {};
+
+const DONE_MESSAGE = 'Done!';
+const FAILED_MESSAGE = 'Something went wrong!';
+const PROCESSING_MESSAGE = 'Processing files...';
 
 program
   .version(packageInfo.version, '-v, --version')
@@ -45,6 +51,8 @@ if (!process.argv.slice(2).length) {
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const [filesGlob] = program.args;
+
+const spinner = ora(PROCESSING_MESSAGE);
 
 const getPrettierConfigFromFile = (filePath: string) => {
   const resolvedPath = path.resolve(__dirname, filePath);
@@ -88,9 +96,7 @@ const transformOptions: Options = {
 };
 
 const drawProgress = (current: number, total: number) => {
-  readline.clearLine(process.stdout, 0);
-  readline.cursorTo(process.stdout, 0);
-  process.stdout.write(`Processing... ${current}/${total}`);
+  spinner.text = `${PROCESSING_MESSAGE} ${current}/${total}`;
 };
 
 const getParsedFile = async (filePath: string) => {
@@ -106,35 +112,35 @@ const getParsedFile = async (filePath: string) => {
 
 const parseFiles = (matches: string[]) => {
   let current = 1;
+  spinner.start();
 
-  return matches.map((filePath) => {
+  drawProgress(current, matches.length);
+
+  return matches.map((filePath) => (
     getParsedFile(filePath)
       .then(() => {
         drawProgress(current, matches.length);
         current += 1;
 
         return filePath;
-      });
-  });
+      })
+  ));
 };
 
 glob(filesGlob, (err, matches) => {
   if (err) {
-    // tslint:disable-next-line no-console
-    console.log(chalk.red('Something went wrong!'));
+    spinner.fail(FAILED_MESSAGE);
 
     return console.error(err);
   }
 
   Promise.all(parseFiles(matches))
     .then(() => {
-      // tslint:disable-next-line no-console
-      console.log(chalk.green('All done!'));
+      spinner.succeed(DONE_MESSAGE);
       process.exit(0);
     })
     .catch((error: Error) => {
-      // tslint:disable-next-line no-console
-      console.log(chalk.red('Something went wrong!'));
+      spinner.fail(FAILED_MESSAGE);
 
       return console.error(error);
     });

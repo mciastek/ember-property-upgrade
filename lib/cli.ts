@@ -22,10 +22,10 @@ const FAILED_MESSAGE = 'Something went wrong!';
 const PROCESSING_MESSAGE = 'Processing files...';
 
 program
+  .usage('[filesGlob] [options]')
   .version(packageInfo.version, '-v, --version')
   .description(`
     CLI for migration to new computed properties in Ember
-    Usage: ember-property-upgrade [filesGlob] [options]
   `)
   .option('--no-format', 'Disable auto formatting after code parsing')
   .option('--prettier-config-file [value]', 'Path to Prettier config file')

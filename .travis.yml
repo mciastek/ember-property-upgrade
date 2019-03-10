@@ -5,4 +5,4 @@ node_js:
 script:
   - yarn types
   - yarn test
-  - yarn build
+  - yarn build && chmod +x ./dist/cli.js && ./dist/cli.js './test/fixtures/*.js'

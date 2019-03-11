@@ -1,6 +1,6 @@
 {
   "name": "ember-property-upgrade",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Tool for migration from deprecated \"property()\" to new syntax",
   "main": "index.js",
   "author": "Miroslaw Ciastek <miroslaw.ciastek@gmail.com>",
@@ -9,6 +9,21 @@
   "files": [
     "dist/",
     "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mciastek/ember-property-upgrade.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mciastek/ember-property-upgrade/issues"
+  },
+  "keywords": [
+    "Ember",
+    "3.9",
+    "computed",
+    "property",
+    "migrate",
+    "migration"
   ],
   "scripts": {
     "build": "babel lib --out-dir dist --extensions '.ts'",

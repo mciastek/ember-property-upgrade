@@ -35,7 +35,7 @@ const TRANSFORM_OPTIONS: TransformOptions = {
   packageName: 'Ember',
   computedFunName: 'computed',
   iteratorMethodNames: ['map', 'filter', 'sort'],
-  autoFormat: true,
+  autoFormat: false,
   autoFormatOptions: {
     parser: 'babel',
   },

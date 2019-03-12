@@ -2,72 +2,67 @@
 
 exports[`ember-property-upgrade for array examples transforms input 1`] = `
 "const Person = EmberObject.extend({
-  friendNames: map(\\"friends\\", [\\"nameKey\\"], function(friend) {
-    return friend[this.get(\\"nameKey\\")];
+  friendNames: map('friends', ['nameKey'], function (friend) {
+    return friend[this.get('nameKey')];
   }),
-  friendsSorted: Ember.sort(\\"friends\\", [\\"nameKey\\"], function(a, b) {
-    return a[this.get(\\"nameKey\\")] - b[this.get(\\"nameKey\\")];
+  friendsSorted: Ember.sort('friends', ['nameKey'], function (a, b) {
+    return a[this.get('nameKey')] - b[this.get('nameKey')];
   }),
-  friendsFiltered: filter(\\"friends\\", [\\"age\\"], function(friend) {
-    return this.get(\\"age\\") < 50;
+  friendsFiltered: filter('friends', ['age'], function (friend) {
+    return this.get('age') < 50;
   })
-});
-"
+});"
 `;
 
 exports[`ember-property-upgrade for basic examples transforms input 1`] = `
 "const Person = EmberObject.extend({
-  fullName: computed(\\"firstName\\", \\"lastName\\", function() {
+  fullName: computed('firstName', 'lastName', function () {
     return \`\${this.firstName} \${this.lastName}\`;
   }),
-  isYoung: Ember.computed(\\"age\\", function() {
+  isYoung: Ember.computed('age', function () {
     return this.age < 50;
   }),
-  hasFriends: Ember.computed(\\"friends\\", function() {
+  hasFriends: Ember.computed('friends', function () {
     return this.friends.length > 0;
   })
-});
-"
+});"
 `;
 
 exports[`ember-property-upgrade for complex examples transforms input 1`] = `
-"import EmberObject, { computed } from \\"@ember/object\\";
+"import EmberObject, { computed } from '@ember/object';
 Person = EmberObject.extend({
   // these will be supplied by \`create\`
   firstName: null,
   lastName: null,
   powers: [],
-  fullName: Ember.computed(\\"firstName\\", \\"lastName\\", function() {
+  fullName: Ember.computed('firstName', 'lastName', function () {
     return \`\${this.firstName} \${this.lastName}\`;
   }),
-  mainPower: Ember.computed(\\"powers\\", function() {
+  mainPower: Ember.computed('powers', function () {
     return this.powers[0];
   })
 });
 let ironMan = Person.create({
-  firstName: \\"Tony\\",
-  lastName: \\"Stark\\",
-  powers: [\\"super-smart\\"]
+  firstName: 'Tony',
+  lastName: 'Stark',
+  powers: ['super-smart']
 });
-ironMan.fullName; // \\"Tony Stark\\"
-"
+ironMan.fullName; // \\"Tony Stark\\""
 `;
 
 exports[`ember-property-upgrade for invalid examples transforms input 1`] = `
 "const Person = EmberObject.extend({
-  fullName: comput(
-    Ember.computed(\\"firstName\\", \\"lastName\\", function() {
-      return \`\${this.firstName} \${this.lastName}\`;
-    })
-  ),
-  lastName: computed(\\"lastName\\", function() {
+  fullName: comput(Ember.computed('firstName', 'lastName', function () {
+    return \`\${this.firstName} \${this.lastName}\`;
+  })),
+  lastName: computed('lastName', function () {
     return this.lastName;
   }),
-  firstName: \\"Joe\\",
+  firstName: 'Joe',
 
   save() {
-    this.set(\\"saved\\", true);
+    this.set('saved', true);
   }
-});
-"
+
+});"
 `;

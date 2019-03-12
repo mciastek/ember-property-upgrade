@@ -1,6 +1,6 @@
 {
   "name": "ember-property-upgrade",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Tool for migration from deprecated \"property()\" to new syntax",
   "main": "index.js",
   "author": "Miroslaw Ciastek <miroslaw.ciastek@gmail.com>",

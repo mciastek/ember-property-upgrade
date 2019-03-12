@@ -27,7 +27,7 @@ program
   .description(`
     CLI for migration to new computed properties in Ember
   `)
-  .option('--no-format', 'Disable auto formatting after code parsing')
+  .option('--format', 'Enable auto formatting after code parsing')
   .option('--prettier-config-file [value]', 'Path to Prettier config file')
   .option('--prettier-config [value]', 'Prettier config as JSON string')
   .option(

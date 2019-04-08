@@ -1,6 +1,6 @@
-# Ember Property Migration Tool [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/mciastek/ember-property-upgrade/blob/master/LICENSE) [![Build Status](https://travis-ci.com/mciastek/ember-property-upgrade.svg?token=Loxo9SSxP3V1RsAiEPrG&branch=master)](https://travis-ci.com/mciastek/ember-property-upgrade)
+# Ember Property Migration Tool [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/mciastek/ember-property-upgrade/blob/master/LICENSE) [![Build Status](https://travis-ci.com/mciastek/ember-property-upgrade.svg?branch=master)](https://travis-ci.com/mciastek/ember-property-upgrade)
 
-Simple tool for migrating computed properties (used with `.property()`) from syntax [deprecated in Ember 3.9](https://deprecations-app-prod.herokuapp.com/deprecations/v3.x/#toc_computed-property-property).
+Simple tool for migrating computed properties (used with `.property()`) from syntax [deprecated in Ember 3.9](https://deprecations.emberjs.com/v3.x/#toc_computed-property-property).
 
 ## Usage
 After installation a CLI is available in your project.
@@ -13,6 +13,44 @@ After installation a CLI is available in your project.
 - `[options]` - defined in [Options](#options) section
 
 Alternatively you can install module globally and access it via alias `ember-property-upgrade`.
+
+## How it works
+
+This tool helps with smooth migration to new computed property syntax. Simply run the CLI and you are done!
+
+**Before**
+```js
+const Person = EmberObject.extend({
+  fullName: computed(function() {
+    return `${this.firstName} ${this.lastName}`;
+  }).property('firstName', 'lastName'),
+
+  isYoung: Ember.computed(function() {
+    return this.age < 50;
+  }).property('age'),
+
+  hasFriends: function() {
+    return this.friends.length > 0;
+  }.property('friends'),
+});
+```
+
+**After**
+```js
+const Person = EmberObject.extend({
+  fullName: computed('firstName', 'lastName', function () {
+    return `${this.firstName} ${this.lastName}`;
+  }),
+
+  isYoung: Ember.computed('age', function () {
+    return this.age < 50;
+  }),
+
+  hasFriends: Ember.computed('friends', function () {
+    return this.friends.length > 0;
+  })
+});
+```
 
 ## Options
 

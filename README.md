@@ -2,6 +2,16 @@
 
 Simple tool for migrating computed properties (used with `.property()`) from syntax [deprecated in Ember 3.9](https://deprecations.emberjs.com/v3.x/#toc_computed-property-property).
 
+## Installation
+
+```
+# With NPM
+npm install ember-property-upgrade --save
+
+# With Yarn
+yarn add ember-property-upgrade
+```
+
 ## Usage
 After installation a CLI is available in your project.
 
@@ -17,6 +27,9 @@ Alternatively you can install module globally and access it via alias `ember-pro
 ## How it works
 
 This tool helps with smooth migration to new computed property syntax. Simply run the CLI and you are done!
+
+>By default ember-property-upgrade doesn't format transformed code. To run auto-format the code use `--format=true` when
+running CLI (see [Options](#options) for more details).
 
 **Before**
 ```js
@@ -38,17 +51,17 @@ const Person = EmberObject.extend({
 **After**
 ```js
 const Person = EmberObject.extend({
-  fullName: computed('firstName', 'lastName', function () {
+  fullName: computed('firstName', 'lastName', function() {
     return `${this.firstName} ${this.lastName}`;
   }),
 
-  isYoung: Ember.computed('age', function () {
+  isYoung: Ember.computed('age', function() {
     return this.age < 50;
   }),
-
-  hasFriends: Ember.computed('friends', function () {
+  
+  hasFriends: Ember.computed('friends', function() {
     return this.friends.length > 0;
-  })
+  }),
 });
 ```
 

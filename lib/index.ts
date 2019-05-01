@@ -1,5 +1,3 @@
-import generate from '@babel/generator';
-
 import {
   parse,
   ParserOptions,
@@ -7,6 +5,7 @@ import {
 
 import traverse, { Node, NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
+import recast from 'recast';
 
 import prettier, { Options as PrettierOptions } from 'prettier';
 
@@ -161,7 +160,15 @@ const updateForProperties = (
 };
 
 export const transform = (input: string, settings: Options = {}) => {
-  const ast = parse(input, DEFAULT_PARSER_OPTIONS);
+  let canTransform = false;
+
+  const ast = recast.parse(input, {
+    parser: {
+      // tslint:disable-next-line no-any
+      parse: (source: any) => parse(source, DEFAULT_PARSER_OPTIONS),
+    },
+  });
+
   const options: TransformOptions = {
     ...TRANSFORM_OPTIONS,
     ...settings,
@@ -175,11 +182,16 @@ export const transform = (input: string, settings: Options = {}) => {
     Identifier(path: NodePath<t.Identifier>) {
       if (path.node.name === 'property') {
         updateForProperties(path, options);
+        canTransform = true;
       }
     },
   });
 
-  const { code } = generate(ast);
+  if (!canTransform) {
+    return '';
+  }
+
+  const { code } = recast.print(ast);
 
   if (options.autoFormat) {
     const formattedCode = prettier.format(code, options.autoFormatOptions);

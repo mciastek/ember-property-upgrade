@@ -114,7 +114,9 @@ const getParsedFile = async (filePath: string) => {
     const code = await readFile(filePath, { encoding: 'utf8' });
     const result = transform(code, transformOptions);
 
-    await writeFile(filePath, result, { encoding: 'utf8' });
+    if (result) {
+      await writeFile(filePath, result, { encoding: 'utf8' });
+    }
   } catch (error) {
     throw error;
   }
